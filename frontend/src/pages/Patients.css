@@ -1,0 +1,50 @@
+.patients-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.patient-info-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.patient-name {
+    font-weight: 500;
+    color: hsl(var(--text-primary));
+}
+
+.patient-phone {
+    font-size: 0.85rem;
+    color: hsl(var(--text-secondary));
+}
+
+.insurance-badge {
+    padding: 0.25rem 0.75rem;
+    background-color: hsl(var(--success) / 0.1);
+    color: hsl(var(--success));
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.patient-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.no-insurance {
+    color: hsl(var(--text-secondary));
+    font-size: 0.85rem;
+}
+
+.btn-label-spacing {
+    margin-left: 4px;
+}
+
+.empty-state-cell {
+    text-align: center;
+    padding: 2rem;
+    color: hsl(var(--text-secondary));
+}

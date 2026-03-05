@@ -1,0 +1,230 @@
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+    background-color: hsl(var(--bg-main));
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background-color: hsl(var(--bg-card));
+    border-right: 1px solid hsl(var(--text-secondary) / 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+.sidebar-header {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    gap: 1rem;
+    border-bottom: 1px solid hsl(var(--text-secondary) / 0.1);
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-dark)));
+    color: white;
+    box-shadow: 0 4px 8px hsl(var(--primary) / 0.3);
+}
+
+.sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: hsl(var(--text-primary));
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    color: hsl(var(--text-secondary));
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.nav-item:hover {
+    background-color: hsl(var(--primary-light) / 0.1);
+    color: hsl(var(--primary));
+}
+
+.nav-item.active {
+    background-color: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid hsl(var(--text-secondary) / 0.1);
+}
+
+.logout-btn {
+    color: hsl(var(--danger));
+}
+
+.logout-btn:hover {
+    background-color: hsl(var(--danger) / 0.1);
+    color: hsl(var(--danger));
+}
+
+/* Main Wrapper */
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header */
+.top-header {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    margin: 1rem 1.5rem 0;
+    border-radius: var(--radius-lg);
+    z-index: 5;
+}
+
+.header-search {
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 20px;
+    border: 1px solid hsl(var(--text-secondary) / 0.2);
+    background-color: hsl(var(--bg-main) / 0.5);
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+    background-color: hsl(var(--bg-card));
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.15);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.icon-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: hsl(var(--bg-main) / 0.8);
+    color: hsl(var(--text-secondary));
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.icon-btn:hover {
+    background: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+}
+
+.badge {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    background-color: hsl(var(--danger));
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    height: 16px;
+    min-width: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid hsl(var(--bg-card));
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+}
+
+.user-profile:hover {
+    background-color: hsl(var(--bg-main));
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--success)));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: hsl(var(--text-primary));
+}
+
+.user-role {
+    font-size: 0.75rem;
+    color: hsl(var(--text-secondary));
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
