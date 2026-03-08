@@ -3,7 +3,7 @@ import pool from '../db';
 
 export const getInventoryHistory = async (req: Request, res: Response): Promise<void> => {
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
         if (!pharmacyId) {
             res.status(403).json({ error: 'Accès non autorisé' });
             return;
@@ -28,7 +28,7 @@ export const getInventoryHistory = async (req: Request, res: Response): Promise<
 export const addStock = async (req: Request, res: Response): Promise<void> => {
     const client = await pool.connect();
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
         const { medication_id, batch_number, quantity, expiry_date, supplier_id, buy_price } = req.body;
 
         if (!pharmacyId) {

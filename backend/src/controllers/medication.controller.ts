@@ -3,7 +3,7 @@ import pool from '../db';
 
 export const getMedications = async (req: Request, res: Response): Promise<void> => {
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
 
         if (!pharmacyId) {
             res.status(403).json({ error: 'Accès non autorisé' });
@@ -24,7 +24,7 @@ export const getMedications = async (req: Request, res: Response): Promise<void>
 
 export const createMedication = async (req: Request, res: Response): Promise<void> => {
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
         const {
             name, generic_name, form, dosage, barcode,
             unit_price, packaging_unit, category, has_vat
@@ -57,7 +57,7 @@ export const createMedication = async (req: Request, res: Response): Promise<voi
 
 export const updateMedication = async (req: Request, res: Response): Promise<void> => {
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
         const { id } = req.params;
         const {
             name, generic_name, form, dosage, barcode,
@@ -106,7 +106,7 @@ export const updateMedication = async (req: Request, res: Response): Promise<voi
 
 export const deleteMedication = async (req: Request, res: Response): Promise<void> => {
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
         const { id } = req.params;
 
         if (!pharmacyId) {

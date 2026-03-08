@@ -4,8 +4,8 @@ import pool from '../db';
 export const createSale = async (req: Request, res: Response): Promise<void> => {
     const client = await pool.connect();
     try {
-        const pharmacyId = req.user?.pharmacyId;
-        const userId = req.user?.id;
+        const pharmacyId = (req as any).user?.pharmacy_id;
+        const userId = (req as any).user?.id;
         const { patient_id, items, total_amount, payment_method, tax_amount, insurance_id, assurance_covered_amount } = req.body;
 
         if (!pharmacyId || !userId) {
@@ -61,7 +61,7 @@ export const createSale = async (req: Request, res: Response): Promise<void> => 
 
 export const getSalesHistory = async (req: Request, res: Response): Promise<void> => {
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
         if (!pharmacyId) {
             res.status(403).json({ error: 'Accès non autorisé' });
             return;

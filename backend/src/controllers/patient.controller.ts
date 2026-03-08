@@ -3,7 +3,7 @@ import pool from '../db';
 
 export const getPatients = async (req: Request, res: Response): Promise<void> => {
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
         if (!pharmacyId) {
             res.status(403).json({ error: 'Accès non autorisé' });
             return;
@@ -23,7 +23,7 @@ export const getPatients = async (req: Request, res: Response): Promise<void> =>
 
 export const createPatient = async (req: Request, res: Response): Promise<void> => {
     try {
-        const pharmacyId = req.user?.pharmacyId;
+        const pharmacyId = (req as any).user?.pharmacy_id;
         const { full_name, phone, email, address, insurance_id, assurance_id_number, insurance_coverage_percent } = req.body;
 
         if (!pharmacyId) {

@@ -35,7 +35,12 @@ export const register = async (req: Request, res: Response) => {
 
         res.status(201).json({
             message: 'Pharmacie et utilisateur créés avec succès.',
-            user: newUser.rows[0]
+            user: {
+                id: newUser.rows[0].id,
+                full_name: `${newUser.rows[0].first_name} ${newUser.rows[0].last_name}`,
+                email: newUser.rows[0].email,
+                role: newUser.rows[0].role
+            }
         });
 
     } catch (error) {
@@ -77,8 +82,7 @@ export const login = async (req: Request, res: Response) => {
             user: {
                 id: user.id,
                 pharmacy_id: user.pharmacy_id,
-                first_name: user.first_name,
-                last_name: user.last_name,
+                full_name: `${user.first_name} ${user.last_name}`,
                 email: user.email,
                 role: user.role
             }
