@@ -17,12 +17,15 @@
 }
 
 .sidebar-header {
-    height: 80px;
+    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 0;
     border-bottom: 1px solid hsl(var(--text-secondary) / 0.1);
+    background-color: white;
+    /* Fond blanc pour bien faire ressortir le logo s'il a fond blanc */
+    overflow: hidden;
 }
 
 .sidebar-logo {
@@ -31,12 +34,18 @@
     justify-content: center;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .sidebar-logo img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 220px;
+    /* Force une plus grande largeur */
+    height: auto;
     object-fit: contain;
+    /* On rogne la partie basse (~20%) contenant "La pharmacie intelligente",
+       on zoome un peu (1.15) et on décale vers le haut pour recentrer le reste */
+    clip-path: inset(0 0 22% 0);
+    transform: scale(1.15) translateY(10%);
 }
 
 .sidebar-nav {
