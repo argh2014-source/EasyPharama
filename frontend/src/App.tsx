@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pill } from 'lucide-react';
+import logoImg from './assets/logo.png';
 import { useAuth } from './context/AuthContext';
 import api from './services/api';
 import './App.css';
@@ -33,10 +33,8 @@ function App() {
       <div className="glass-panel auth-card animate-slide-down">
         <div className="auth-header">
           <div className="auth-logo">
-            <Pill size={32} />
+            <img src={logoImg} alt="EasyPharma" />
           </div>
-          <h1 className="auth-title">EasyPharma</h1>
-          <p className="auth-subtitle">La pharmacie intelligente</p>
         </div>
 
         {error && (

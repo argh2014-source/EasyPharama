@@ -12,6 +12,7 @@ import {
     LogOut,
     Bell
 } from 'lucide-react';
+import logoImg from '../assets/logo.png';
 import './DashboardLayout.css';
 
 export default function DashboardLayout() {
@@ -39,9 +40,8 @@ export default function DashboardLayout() {
             <aside className="sidebar">
                 <div className="sidebar-header">
                     <div className="sidebar-logo">
-                        <Pill size={28} />
+                        <img src={logoImg} alt="EasyPharma" />
                     </div>
-                    <h2 className="sidebar-title">EasyPharma</h2>
                 </div>
 
                 <nav className="sidebar-nav">
