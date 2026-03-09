@@ -3,6 +3,7 @@ import { Search, Plus } from 'lucide-react';
 import api from '../services/api';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import Modal from '../components/Modal';
 import './Inventory.css';
 
 interface InventoryMovement {
@@ -21,6 +22,10 @@ export default function Inventory() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+
+    // Nouveaux états pour les modals
+    const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
+    const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
 
     const fetchHistory = async () => {
         try {
@@ -53,10 +58,10 @@ export default function Inventory() {
                     <p className="page-subtitle">Consultez l'historique des entrées, sorties et ajustements d'inventaire.</p>
                 </div>
                 <div className="header-actions">
-                    <button className="btn btn-secondary">Ajuster le stock</button>
-                    <button className="btn btn-primary">
+                    <button className="btn btn-secondary" onClick={() => setIsAdjustModalOpen(true)}>Ajuster le stock</button>
+                    <button className="btn btn-primary" onClick={() => setIsEntryModalOpen(true)}>
                         <Plus size={18} />
-                        Nouvelle Entrée
+                        <span>Nouvelle Entrée</span>
                     </button>
                 </div>
             </div>
@@ -127,6 +132,75 @@ export default function Inventory() {
                     )}
                 </div>
             </div>
+
+            {/* Modal Ajuster le stock */}
+            <Modal isOpen={isAdjustModalOpen} onClose={() => setIsAdjustModalOpen(false)} title="Ajuster le stock">
+                <form className="modal-form" onSubmit={(e) => { e.preventDefault(); setIsAdjustModalOpen(false); }}>
+                    <div className="input-group">
+                        <label className="input-label">Médicament *</label>
+                        <select className="input-field" required>
+                            <option value="">Sélectionner un médicament...</option>
+                            <option value="1">Paracétamol 500mg</option>
+                            <option value="2">Ibuprofène 400mg</option>
+                        </select>
+                    </div>
+                    <div className="input-group-row" style={{ display: 'flex', gap: '1rem' }}>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Type d'ajustement *</label>
+                            <select className="input-field" required>
+                                <option value="sub">Retrait (Perte, Périmé)</option>
+                                <option value="add">Ajout (Inventaire physique)</option>
+                            </select>
+                        </div>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Quantité *</label>
+                            <input type="number" className="input-field" min="1" required />
+                        </div>
+                    </div>
+                    <div className="input-group">
+                        <label className="input-label">Motif de l'ajustement</label>
+                        <textarea className="input-field" rows={3}></textarea>
+                    </div>
+                    <div className="modal-form-actions">
+                        <button type="button" className="btn btn-secondary" onClick={() => setIsAdjustModalOpen(false)}>Annuler</button>
+                        <button type="submit" className="btn btn-primary">Valider l'ajustement</button>
+                    </div>
+                </form>
+            </Modal>
+
+            {/* Modal Nouvelle Entrée */}
+            <Modal isOpen={isEntryModalOpen} onClose={() => setIsEntryModalOpen(false)} title="Nouvelle Entrée (Réception)">
+                <form className="modal-form" onSubmit={(e) => { e.preventDefault(); setIsEntryModalOpen(false); }}>
+                    <div className="input-group">
+                        <label className="input-label">Fournisseur</label>
+                        <select className="input-field">
+                            <option value="">Sélectionner un fournisseur...</option>
+                            <option value="1">Grossiste Pharma SA</option>
+                        </select>
+                    </div>
+                    <div className="input-group">
+                        <label className="input-label">Numéro de Bon / Référence</label>
+                        <input type="text" className="input-field" placeholder="Ex: BL-2023-089" />
+                    </div>
+                    <div className="input-group-row" style={{ display: 'flex', gap: '1rem' }}>
+                        <div className="input-group" style={{ flex: 2 }}>
+                            <label className="input-label">Médicament *</label>
+                            <select className="input-field" required>
+                                <option value="">Sélectionner...</option>
+                                <option value="1">Paracétamol 500mg</option>
+                            </select>
+                        </div>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Quantité *</label>
+                            <input type="number" className="input-field" min="1" required />
+                        </div>
+                    </div>
+                    <div className="modal-form-actions">
+                        <button type="button" className="btn btn-secondary" onClick={() => setIsEntryModalOpen(false)}>Annuler</button>
+                        <button type="submit" className="btn btn-primary">Enregistrer l'entrée</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

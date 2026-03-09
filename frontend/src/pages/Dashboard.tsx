@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
     DollarSign,
     ShoppingCart,
@@ -6,7 +7,7 @@ import {
     TrendingUp,
     Package
 } from 'lucide-react';
-// import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Modal from '../components/Modal';
 import './Dashboard.css';
 
 const summaryData = [
@@ -16,17 +17,9 @@ const summaryData = [
     { title: "Clients Servis", value: "156", icon: <Users size={24} />, colorClass: "stat-accent", trend: "+18%" }
 ];
 
-/* const chartData = [
-  { name: 'Lun', ventes: 4000 },
-  { name: 'Mar', ventes: 3000 },
-  { name: 'Mer', ventes: 2000 },
-  { name: 'Jeu', ventes: 2780 },
-  { name: 'Ven', ventes: 1890 },
-  { name: 'Sam', ventes: 2390 },
-  { name: 'Dim', ventes: 3490 },
-]; */
-
 export default function Dashboard() {
+    const [isSalesModalOpen, setIsSalesModalOpen] = useState(false);
+
     return (
         <div className="dashboard-page">
             <div className="page-header">
@@ -35,7 +28,7 @@ export default function Dashboard() {
                     <p className="page-subtitle">Bienvenue, voici un résumé de l'activité de votre pharmacie aujourd'hui.</p>
                 </div>
                 <div className="header-actions">
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={() => setIsSalesModalOpen(true)}>
                         <ShoppingCart size={18} />
                         <span>Nouvelle Vente</span>
                     </button>
@@ -71,7 +64,6 @@ export default function Dashboard() {
                         <h2 className="section-title">Aperçu des Ventes (Semaine)</h2>
                     </div>
                     <div className="chart-container">
-                        {/* TODO: Add Recharts when fully integrated */}
                         <div className="mock-chart">
                             <p>Graphique des ventes à venir</p>
                         </div>
@@ -120,6 +112,24 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
+
+            {/* Modals */}
+            <Modal isOpen={isSalesModalOpen} onClose={() => setIsSalesModalOpen(false)} title="Nouvelle Vente">
+                <form className="modal-form" onSubmit={(e) => { e.preventDefault(); setIsSalesModalOpen(false); }}>
+                    <div className="input-group">
+                        <label className="input-label">Médicament à vendre</label>
+                        <input type="text" className="input-field" placeholder="Ex: Paracétamol" />
+                    </div>
+                    <div className="input-group">
+                        <label className="input-label">Quantité</label>
+                        <input type="number" className="input-field" min="1" defaultValue="1" />
+                    </div>
+                    <div className="modal-form-actions">
+                        <button type="button" className="btn btn-secondary" onClick={() => setIsSalesModalOpen(false)}>Annuler</button>
+                        <button type="submit" className="btn btn-primary">Valider la vente</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

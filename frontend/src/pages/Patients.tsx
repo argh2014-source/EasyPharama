@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, FileText, User } from 'lucide-react';
 import api from '../services/api';
+import Modal from '../components/Modal';
 import './Patients.css';
 
 interface Patient {
@@ -18,6 +19,8 @@ export default function Patients() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const fetchPatients = async () => {
         try {
@@ -49,7 +52,7 @@ export default function Patients() {
                     <h1 className="page-title">Patients & Clients</h1>
                     <p className="page-subtitle">Gestion du dossier des patients, contacts et assurances.</p>
                 </div>
-                <button className="btn btn-primary">
+                <button className="btn btn-primary" onClick={() => setIsAddModalOpen(true)}>
                     <Plus size={18} />
                     <span>Nouveau Patient</span>
                 </button>
@@ -124,6 +127,46 @@ export default function Patients() {
                     )}
                 </div>
             </div>
+
+            {/* Modal Nouveau Patient */}
+            <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Nouveau Patient">
+                <form className="modal-form" onSubmit={(e) => { e.preventDefault(); setIsAddModalOpen(false); }}>
+                    <div className="input-group-row" style={{ display: 'flex', gap: '1rem' }}>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Prénom *</label>
+                            <input type="text" className="input-field" placeholder="Ex: Jean" required />
+                        </div>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Nom *</label>
+                            <input type="text" className="input-field" placeholder="Ex: Dupont" required />
+                        </div>
+                    </div>
+                    <div className="input-group-row" style={{ display: 'flex', gap: '1rem' }}>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Téléphone</label>
+                            <input type="tel" className="input-field" placeholder="Ex: +229 00000000" />
+                        </div>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Email</label>
+                            <input type="email" className="input-field" placeholder="Ex: jean.dupont@email.com" />
+                        </div>
+                    </div>
+                    <div className="input-group-row" style={{ display: 'flex', gap: '1rem' }}>
+                        <div className="input-group" style={{ flex: 2 }}>
+                            <label className="input-label">Nom de l'assurance</label>
+                            <input type="text" className="input-field" placeholder="Ex: NSIA" />
+                        </div>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Couverture (%)</label>
+                            <input type="number" className="input-field" placeholder="80" max="100" min="0" />
+                        </div>
+                    </div>
+                    <div className="modal-form-actions">
+                        <button type="button" className="btn btn-secondary" onClick={() => setIsAddModalOpen(false)}>Annuler</button>
+                        <button type="submit" className="btn btn-primary">Enregistrer le patient</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

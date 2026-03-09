@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Truck, Building2 } from 'lucide-react';
 import api from '../services/api';
+import Modal from '../components/Modal';
 import './Suppliers.css';
 
 interface Supplier {
@@ -17,6 +18,8 @@ export default function Suppliers() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const fetchSuppliers = async () => {
         try {
@@ -48,7 +51,7 @@ export default function Suppliers() {
                     <h1 className="page-title">Fournisseurs & Commandes</h1>
                     <p className="page-subtitle">Gérez les laboratoires et grossistes répartiteurs.</p>
                 </div>
-                <button className="btn btn-primary">
+                <button className="btn btn-primary" onClick={() => setIsAddModalOpen(true)}>
                     <Plus size={18} />
                     <span>Nouveau Fournisseur</span>
                 </button>
@@ -120,6 +123,38 @@ export default function Suppliers() {
                     )}
                 </div>
             </div>
+
+            {/* Modal Nouveau Fournisseur */}
+            <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Nouveau Fournisseur">
+                <form className="modal-form" onSubmit={(e) => { e.preventDefault(); setIsAddModalOpen(false); }}>
+                    <div className="input-group">
+                        <label className="input-label">Nom du fournisseur/laboratoire *</label>
+                        <input type="text" className="input-field" placeholder="Ex: Grossiste Pharma SA" required />
+                    </div>
+                    <div className="input-group">
+                        <label className="input-label">Personne à contacter</label>
+                        <input type="text" className="input-field" placeholder="Ex: Mr. Martin" />
+                    </div>
+                    <div className="input-group-row" style={{ display: 'flex', gap: '1rem' }}>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Téléphone *</label>
+                            <input type="tel" className="input-field" placeholder="Ex: +229 00000000" required />
+                        </div>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Email</label>
+                            <input type="email" className="input-field" placeholder="Ex: contact@pharma.sa" />
+                        </div>
+                    </div>
+                    <div className="input-group">
+                        <label className="input-label">Adresse</label>
+                        <textarea className="input-field" rows={2} placeholder="Ex: Cotonou, Bénin"></textarea>
+                    </div>
+                    <div className="modal-form-actions">
+                        <button type="button" className="btn btn-secondary" onClick={() => setIsAddModalOpen(false)}>Annuler</button>
+                        <button type="submit" className="btn btn-primary">Créer le fournisseur</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }

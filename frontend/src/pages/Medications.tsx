@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Edit, Trash2, MoreVertical } from 'lucide-react';
 import api from '../services/api';
+import Modal from '../components/Modal';
 import './Medications.css';
 
 interface Medication {
@@ -17,6 +18,9 @@ export default function Medications() {
     const [medications, setMedications] = useState<Medication[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    // Nouveaux états pour le modal
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const fetchMedications = async () => {
         try {
@@ -60,7 +64,7 @@ export default function Medications() {
                     <h1 className="page-title">Médicaments</h1>
                     <p className="page-subtitle">Gérez le catalogue de médicaments de votre pharmacie.</p>
                 </div>
-                <button className="btn btn-primary">
+                <button className="btn btn-primary" onClick={() => setIsAddModalOpen(true)}>
                     <Plus size={18} />
                     <span>Ajouter un Médicament</span>
                 </button>
@@ -153,6 +157,38 @@ export default function Medications() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal Nouveau Médicament */}
+            <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Nouveau Médicament">
+                <form className="modal-form" onSubmit={(e) => { e.preventDefault(); setIsAddModalOpen(false); }}>
+                    <div className="input-group">
+                        <label className="input-label">Nom du médicament *</label>
+                        <input type="text" className="input-field" placeholder="Ex: Clamoxyl 500mg" required />
+                    </div>
+                    <div className="input-group">
+                        <label className="input-label">Catégorie</label>
+                        <input type="text" className="input-field" placeholder="Ex: Antibiotiques" />
+                    </div>
+                    <div className="input-group-row" style={{ display: 'flex', gap: '1rem' }}>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Prix (FCFA) *</label>
+                            <input type="number" className="input-field" placeholder="0" required />
+                        </div>
+                        <div className="input-group" style={{ flex: 1 }}>
+                            <label className="input-label">Stock Initial</label>
+                            <input type="number" className="input-field" defaultValue="0" />
+                        </div>
+                    </div>
+                    <div className="input-group">
+                        <label className="input-label">Seuil d'alerte (Stock faible)</label>
+                        <input type="number" className="input-field" defaultValue="10" />
+                    </div>
+                    <div className="modal-form-actions">
+                        <button type="button" className="btn btn-secondary" onClick={() => setIsAddModalOpen(false)}>Annuler</button>
+                        <button type="submit" className="btn btn-primary">Créer le médicament</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }
