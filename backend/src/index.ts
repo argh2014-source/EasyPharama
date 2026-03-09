@@ -10,6 +10,16 @@ import supplierRoutes from './routes/supplier.routes';
 
 dotenv.config();
 
+// Vérification stricte des variables d'environnement cruciales
+const requiredEnv = ['DATABASE_URL', 'JWT_SECRET'];
+const missingEnv = requiredEnv.filter(envVar => !process.env[envVar]);
+
+if (missingEnv.length > 0) {
+    console.error(`❌ ERREUR CRITIQUE: Les variables d'environnement suivantes sont manquantes : ${missingEnv.join(', ')}`);
+    console.error(`ℹ️ Assurez-vous de les ajouter dans Vercel (Settings > Environment Variables) ou dans votre fichier .env local.`);
+    process.exit(1);
+}
+
 const app = express();
 const port = process.env.PORT || 5000;
 
