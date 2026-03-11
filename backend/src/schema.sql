@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS pharmacies (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Users (Admin, Pharmacist, Cashier, Stock Manager)
+-- 2. Users (Admin, Pharmacist, Cashier, Stock Manager, Accountant)
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     pharmacy_id INTEGER REFERENCES pharmacies(id) ON DELETE CASCADE,
@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS users (
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL, -- 'SYSTEM_ADMIN', 'PHARMACY_ADMIN', 'PHARMACIST', 'CASHIER', 'STOCK_MANAGER'
+    role VARCHAR(50) NOT NULL, -- 'SYSTEM_ADMIN', 'PHARMACY_ADMIN', 'PHARMACIST', 'CASHIER', 'STOCK_MANAGER', 'ACCOUNTANT'
+    custom_permissions JSONB DEFAULT '{}',
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

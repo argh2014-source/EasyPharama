@@ -11,7 +11,7 @@ const pool = new Pool({
 
 async function listUsers() {
     try {
-        const res = await pool.query('SELECT email, role FROM users');
+        const res = await pool.query('SELECT email, role, is_active FROM users');
         console.log('Users found:');
         console.table(res.rows);
     } catch (err) {

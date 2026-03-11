@@ -19,23 +19,31 @@ export default function DashboardLayout() {
     const location = useLocation();
     const { user, logout } = useAuth();
 
-    const menuItems = [
-        { icon: <LayoutDashboard size={20} />, label: 'Tableau de bord', path: '/dashboard' },
-        { icon: <Pill size={20} />, label: 'Médicaments', path: '/medications' },
-        { icon: <Package size={20} />, label: 'Stock', path: '/stock' },
-        { icon: <ShoppingCart size={20} />, label: 'Ventes', path: '/sales' },
-        { icon: <Users size={20} />, label: 'Patients', path: '/patients' },
-        { icon: <FileText size={20} />, label: 'Ordonnances', path: '/prescriptions' },
-        { icon: <Truck size={20} />, label: 'Fournisseurs', path: '/suppliers' },
-        { icon: <Settings size={20} />, label: 'Paramètres', path: '/settings' },
+    const allMenuItems = [
+        { icon: <LayoutDashboard size={20} />, label: 'Tableau de bord', path: '/dashboard', roles: ['ALL'] },
+        { icon: <Pill size={20} />, label: 'Médicaments', path: '/medications', roles: ['PHARMACIST', 'CASHIER', 'STOCK_MANAGER'] },
+        { icon: <Package size={20} />, label: 'Stock', path: '/stock', roles: ['STOCK_MANAGER'] },
+        { icon: <ShoppingCart size={20} />, label: 'Ventes', path: '/sales', roles: ['CASHIER', 'ACCOUNTANT'] },
+        { icon: <Users size={20} />, label: 'Patients', path: '/patients', roles: ['PHARMACIST'] },
+        { icon: <FileText size={20} />, label: 'Ordonnances', path: '/prescriptions', roles: ['PHARMACIST'] },
+        { icon: <Truck size={20} />, label: 'Fournisseurs', path: '/suppliers', roles: ['STOCK_MANAGER'] },
+        { icon: <Settings size={20} />, label: 'Paramètres', path: '/settings', roles: [] },
     ];
+
+    const menuItems = allMenuItems.filter(item => {
+        if (!user) return false;
+        if (user.role === 'SYSTEM_ADMIN' || user.role === 'PHARMACY_ADMIN') return true;
+        return item.roles.includes('ALL') || item.roles.includes(user.role);
+    });
 
     const getInitials = (name: string) => {
         return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
     };
 
+    const roleClass = user ? `theme-${user.role.toLowerCase()}` : '';
+
     return (
-        <div className="dashboard-layout">
+        <div className={`dashboard-layout ${roleClass}`}>
             {/* Sidebar */}
             <aside className="sidebar">
                 <div className="sidebar-header">
@@ -49,7 +57,7 @@ export default function DashboardLayout() {
                         <Link
                             key={item.path}
                             to={item.path}
-                            className={`nav-item ${location.pathname.startsWith(item.path) ? 'active' : ''}`}
+                            className={`nav-item ${location.pathname.startsWith(item.path) && item.path !== '/' ? 'active' : ''}`}
                         >
                             {item.icon}
                             <span>{item.label}</span>

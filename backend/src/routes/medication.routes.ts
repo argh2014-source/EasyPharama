@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticateToken, authorizeRoles } from '../middleware/auth.middleware';
+import { authenticateToken, authorizeRoles, requirePermission } from '../middleware/auth.middleware';
 import {
     getMedications,
     createMedication,
@@ -9,11 +9,9 @@ import {
 
 const router = Router();
 
-// Routes for medications
-// Note: Some roles might be adjusted later. Currently letting admins and managers do CRUD.
-router.get('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN', 'PHARMACY_ADMIN', 'PHARMACIST', 'CASHIER'), getMedications);
-router.post('/', authenticateToken, authorizeRoles('SYSTEM_ADMIN', 'PHARMACY_ADMIN', 'PHARMACIST', 'STOCK_MANAGER'), createMedication);
-router.put('/:id', authenticateToken, authorizeRoles('SYSTEM_ADMIN', 'PHARMACY_ADMIN', 'PHARMACIST', 'STOCK_MANAGER'), updateMedication);
+router.get('/', authenticateToken, requirePermission('medications.read'), getMedications);
+router.post('/', authenticateToken, requirePermission('medications.write'), createMedication);
+router.put('/:id', authenticateToken, requirePermission('medications.write'), updateMedication);
 router.delete('/:id', authenticateToken, authorizeRoles('SYSTEM_ADMIN', 'PHARMACY_ADMIN'), deleteMedication);
 
 export default router;

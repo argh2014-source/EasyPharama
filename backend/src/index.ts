@@ -7,6 +7,8 @@ import inventoryRoutes from './routes/inventory.routes';
 import saleRoutes from './routes/sale.routes';
 import patientRoutes from './routes/patient.routes';
 import supplierRoutes from './routes/supplier.routes';
+import userRoutes from './routes/user.routes';
+import auditRoutes from './routes/audit.routes';
 
 dotenv.config();
 
@@ -32,6 +34,8 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/sales', saleRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/audit-logs', auditRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'EasyPharma API is running' });
@@ -45,3 +49,4 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export default app;
+module.exports = app;

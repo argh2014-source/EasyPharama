@@ -71,7 +71,8 @@ export const login = async (req: Request, res: Response) => {
             id: user.id,
             pharmacy_id: user.pharmacy_id,
             email: user.email,
-            role: user.role
+            role: user.role,
+            custom_permissions: user.custom_permissions || {}
         };
 
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
@@ -84,7 +85,8 @@ export const login = async (req: Request, res: Response) => {
                 pharmacy_id: user.pharmacy_id,
                 full_name: `${user.first_name} ${user.last_name}`,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                custom_permissions: user.custom_permissions || {}
             }
         });
 

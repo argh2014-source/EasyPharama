@@ -17,12 +17,12 @@ function App() {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email: email.trim(), password: password.trim() });
       const { token, user } = response.data;
       login(token, user);
     } catch (err: any) {
       console.error('Login error', err);
-      setError(err.response?.data?.error || 'Erreur lors de la connexion. Vérifiez vos identifiants.');
+      setError(err.response?.data?.error || `Erreur réseau : ${err.message} (${err.code})`);
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ interface User {
     email: string;
     role: string;
     pharmacy_id: string;
+    custom_permissions?: Record<string, boolean>;
 }
 
 interface AuthContextType {
