@@ -41,12 +41,9 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'EasyPharma API is running' });
 });
 
-// Pour fonctionner en tant que fonction Serverless sur Vercel
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-    });
-}
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
 
 export default app;
 module.exports = app;
