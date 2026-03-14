@@ -10,8 +10,8 @@ export const logAuditUserAction = async (
 ) => {
     try {
         await query(
-\`INSERT INTO audit_logs (user_id, pharmacy_id, action, entity_type, entity_id, details)
-             VALUES ($1, $2, $3, $4, $5, $6)\`,
+            `INSERT INTO audit_logs (user_id, pharmacy_id, action, entity_type, entity_id, details)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
             [userId, pharmacyId, action, entityType, entityId || null, details ? JSON.stringify(details) : null]
         );
     } catch (error) {
