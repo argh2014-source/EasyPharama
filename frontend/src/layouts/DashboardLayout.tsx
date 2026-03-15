@@ -10,7 +10,8 @@ import {
     Truck,
     Settings,
     LogOut,
-    Bell
+    Bell,
+    UserCog
 } from 'lucide-react';
 import logoImg from '../assets/logo.png';
 import './DashboardLayout.css';
@@ -27,6 +28,7 @@ export default function DashboardLayout() {
         { icon: <Users size={20} />, label: 'Patients', path: '/patients', roles: ['PHARMACIST'] },
         { icon: <FileText size={20} />, label: 'Ordonnances', path: '/prescriptions', roles: ['PHARMACIST'] },
         { icon: <Truck size={20} />, label: 'Fournisseurs', path: '/suppliers', roles: ['STOCK_MANAGER'] },
+        { icon: <UserCog size={20} />, label: 'Utilisateurs', path: '/users', roles: ['SYSTEM_ADMIN', 'PHARMACY_ADMIN'] },
         { icon: <Settings size={20} />, label: 'Paramètres', path: '/settings', roles: [] },
     ];
 

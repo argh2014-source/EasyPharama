@@ -38,14 +38,9 @@
 }
 
 .sidebar-logo img {
-    width: 220px;
-    /* Force une plus grande largeur */
-    height: auto;
+    max-width: 90%;
+    max-height: 70px;
     object-fit: contain;
-    /* On rogne la partie basse (~20%) contenant "La pharmacie intelligente",
-       on zoome un peu (1.15) et on décale vers le haut pour recentrer le reste */
-    clip-path: inset(0 0 22% 0);
-    transform: scale(1.15) translateY(10%);
 }
 
 .sidebar-nav {

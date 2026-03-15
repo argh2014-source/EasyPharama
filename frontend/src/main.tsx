@@ -13,6 +13,7 @@ import Patients from './pages/Patients';
 import Prescriptions from './pages/Prescriptions';
 import Suppliers from './pages/Suppliers';
 import Settings from './pages/Settings';
+import Users from './pages/Users';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -38,6 +39,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="prescriptions" element={<Prescriptions />} />
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="users" element={<Users />} />
             <Route index element={<Dashboard />} />
           </Route>
         </Routes>
