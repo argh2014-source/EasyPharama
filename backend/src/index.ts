@@ -9,6 +9,7 @@ import patientRoutes from './routes/patient.routes';
 import supplierRoutes from './routes/supplier.routes';
 import userRoutes from './routes/user.routes';
 import auditRoutes from './routes/audit.routes';
+import statsRoutes from './routes/stats.routes';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/api/patients', patientRoutes);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/audit-logs', auditRoutes);
+app.use('/api/stats', statsRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'EasyPharma API is running' });

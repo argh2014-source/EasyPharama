@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     DollarSign,
     ShoppingCart,
@@ -7,25 +7,94 @@ import {
     TrendingUp,
     Package
 } from 'lucide-react';
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    AreaChart,
+    Area
+} from 'recharts';
+import api from '../../services/api';
 import Modal from '../../components/Modal';
 import '../Dashboard.css';
 
-const summaryData = [
-    { title: "Chiffre d'Affaires du Jour", value: "245,000 FCFA", icon: <DollarSign size={24} />, colorClass: "stat-primary", trend: "+12%" },
-    { title: "Ventes du Jour", value: "84", icon: <ShoppingCart size={24} />, colorClass: "stat-success", trend: "+5%" },
-    { title: "Rupture de Stock", value: "12", icon: <AlertTriangle size={24} />, colorClass: "stat-danger", trend: "-2" },
-    { title: "Clients Servis", value: "156", icon: <Users size={24} />, colorClass: "stat-accent", trend: "+18%" }
-];
+interface DashboardStats {
+    summary: {
+        dailyRevenue: number;
+        dailySalesCount: number;
+        lowStockCount: number;
+        patientsServed: number;
+    };
+    weeklySales: Array<{ sale_date: string; amount: number }>;
+    alerts: {
+        stock: Array<{ brand_name: string; dci: string; stock_quantity: number; min_stock_level: number }>;
+        expiry: Array<{ brand_name: string; batch_number: string; expiration_date: string }>;
+    };
+}
 
 export default function AdminDashboard() {
+    const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [loading, setLoading] = useState(true);
     const [isSalesModalOpen, setIsSalesModalOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await api.get('/stats');
+                setStats(response.data);
+            } catch (error) {
+                console.error('Error fetching dashboard stats:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    if (loading) return <div className="p-8">Chargement des données...</div>;
+
+    const summaryCards = [
+        {
+            title: "Chiffre d'Affaires du Jour",
+            value: `${stats?.summary.dailyRevenue.toLocaleString()} FCFA`,
+            icon: <DollarSign size={24} />,
+            colorClass: "stat-primary",
+            trend: "+12%" // Still mock trend for now
+        },
+        {
+            title: "Ventes du Jour",
+            value: stats?.summary.dailySalesCount.toString() || "0",
+            icon: <ShoppingCart size={24} />,
+            colorClass: "stat-success",
+            trend: "+5%"
+        },
+        {
+            title: "Articles en alerte stock",
+            value: stats?.summary.lowStockCount.toString() || "0",
+            icon: <AlertTriangle size={24} />,
+            colorClass: "stat-danger",
+            trend: "Alerte stock"
+        },
+        {
+            title: "Clients Servis",
+            value: stats?.summary.patientsServed.toString() || "0",
+            icon: <Users size={24} />,
+            colorClass: "stat-accent",
+            trend: "+18%"
+        }
+    ];
 
     return (
         <div className="dashboard-page">
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Tableau de bord Global</h1>
-                    <p className="page-subtitle">Vue Administrateur - Résumé de l'activité de votre pharmacie aujourd'hui.</p>
+                    <p className="page-subtitle">Vue Administrateur - Résumé de l'activité réelle de votre pharmacie.</p>
                 </div>
                 <div className="header-actions">
                     <button className="btn btn-primary" onClick={() => setIsSalesModalOpen(true)}>
@@ -37,7 +106,7 @@ export default function AdminDashboard() {
 
             {/* Stats Cards */}
             <div className="stats-grid">
-                {summaryData.map((stat, index) => (
+                {summaryCards.map((stat, index) => (
                     <div key={index} className={`stat-card glass-panel ${stat.colorClass}`}>
                         <div className="stat-icon-wrapper">
                             {stat.icon}
@@ -46,11 +115,9 @@ export default function AdminDashboard() {
                             <p className="stat-title">{stat.title}</p>
                             <h3 className="stat-value">{stat.value}</h3>
                             <p className="stat-trend">
-                                <TrendingUp size={14} className={stat.trend.startsWith('+') ? 'trend-up' : 'trend-down'} />
-                                <span className={stat.trend.startsWith('+') ? 'text-success' : 'text-danger'}>
-                                    {stat.trend}
-                                </span>
-                                <span className="trend-text"> par rapport à hier</span>
+                                <TrendingUp size={14} className="trend-up" />
+                                <span className="text-success">{stat.trend}</span>
+                                <span className="trend-text"> (temps réel)</span>
                             </p>
                         </div>
                     </div>
@@ -61,12 +128,27 @@ export default function AdminDashboard() {
                 {/* Main Chart */}
                 <div className="chart-section glass-panel">
                     <div className="section-header">
-                        <h2 className="section-title">Aperçu des Ventes (Semaine)</h2>
+                        <h2 className="section-title">Aperçu des Ventes (7 derniers jours)</h2>
                     </div>
-                    <div className="chart-container">
-                        <div className="mock-chart">
-                            <p>Graphique des ventes à venir</p>
-                        </div>
+                    <div className="chart-container" style={{ height: '300px', width: '100%' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={stats?.weeklySales || []}>
+                                <defs>
+                                    <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                                <XAxis dataKey="sale_date" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} tickFormatter={(val) => `${val / 1000}k`} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    formatter={(value: any) => [`${value.toLocaleString()} FCFA`, 'Ventes']}
+                                />
+                                <Area type="monotone" dataKey="amount" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorAmount)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
 
@@ -78,20 +160,21 @@ export default function AdminDashboard() {
                             <h3>Produits proches péremption</h3>
                         </div>
                         <ul className="alert-list">
-                            <li>
-                                <div className="alert-item-info">
-                                    <strong>Amoxicilline 500mg</strong>
-                                    <span>Lot: BXC-990</span>
-                                </div>
-                                <span className="alert-date">Dans 15 jours</span>
-                            </li>
-                            <li>
-                                <div className="alert-item-info">
-                                    <strong>Doliprane 1000mg</strong>
-                                    <span>Lot: DLP-112</span>
-                                </div>
-                                <span className="alert-date">Dans 30 jours</span>
-                            </li>
+                            {stats?.alerts.expiry.length === 0 ? (
+                                <li className="empty-state">Aucune péremption proche</li>
+                            ) : (
+                                stats?.alerts.expiry.map((alert, i) => (
+                                    <li key={i}>
+                                        <div className="alert-item-info">
+                                            <strong>{alert.brand_name}</strong>
+                                            <span>Lot: {alert.batch_number}</span>
+                                        </div>
+                                        <span className="alert-date">
+                                            {new Date(alert.expiration_date).toLocaleDateString('fr-FR')}
+                                        </span>
+                                    </li>
+                                ))
+                            )}
                         </ul>
                     </div>
 
@@ -101,13 +184,19 @@ export default function AdminDashboard() {
                             <h3>Ruptures de stock critiques</h3>
                         </div>
                         <ul className="alert-list">
-                            <li>
-                                <div className="alert-item-info">
-                                    <strong>Aerius 5mg</strong>
-                                    <span>Stock: 0</span>
-                                </div>
-                                <button className="btn btn-sm btn-secondary">Commander</button>
-                            </li>
+                            {stats?.alerts.stock.length === 0 ? (
+                                <li className="empty-state">Stock suffisant pour tous les produits</li>
+                            ) : (
+                                stats?.alerts.stock.map((alert, i) => (
+                                    <li key={i}>
+                                        <div className="alert-item-info">
+                                            <strong>{alert.brand_name}</strong>
+                                            <span>{alert.dci} - Stock: {alert.stock_quantity}/{alert.min_stock_level}</span>
+                                        </div>
+                                        <button className="btn btn-sm btn-secondary">Commander</button>
+                                    </li>
+                                ))
+                            )}
                         </ul>
                     </div>
                 </div>

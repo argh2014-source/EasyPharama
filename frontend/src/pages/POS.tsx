@@ -6,8 +6,8 @@ import './POS.css';
 interface Product {
     id: string;
     name: string;
-    price: number | string;
-    stock: number;
+    selling_price: number | string;
+    stock_quantity: number;
 }
 
 interface CartItem extends Product {
@@ -46,7 +46,7 @@ export default function POS() {
     }, [searchTerm]);
 
     const addToCart = (product: Product) => {
-        if (product.stock <= 0) return;
+        if (Number(product.stock_quantity) <= 0) return;
 
         setCart(prev => {
             const existing = prev.find(item => item.id === product.id);
@@ -63,7 +63,6 @@ export default function POS() {
         setCart(prev => prev.map(item => {
             if (item.id === id) {
                 const newQty = Math.max(1, item.qty + delta);
-                // Optionnel: Vérifier le stock ici aussi
                 return { ...item, qty: newQty };
             }
             return item;
@@ -74,7 +73,7 @@ export default function POS() {
         setCart(prev => prev.filter(item => item.id !== id));
     };
 
-    const total = cart.reduce((acc, item) => acc + (Number(item.price) * item.qty), 0);
+    const total = cart.reduce((acc, item) => acc + (Number(item.selling_price) * item.qty), 0);
 
     const handleCheckout = async () => {
         if (cart.length === 0 || isProcessing) return;
@@ -85,7 +84,7 @@ export default function POS() {
                 items: cart.map(item => ({
                     medication_id: item.id,
                     quantity: item.qty,
-                    price: item.price
+                    unit_price: Number(item.selling_price)
                 })),
                 total_amount: total,
                 payment_method: paymentMethod
@@ -124,14 +123,14 @@ export default function POS() {
                         <div className="quick-items-grid">
                             {products.map(product => (
                                 <div
-                                    className={`quick-item-card ${product.stock <= 0 ? 'disabled' : ''}`}
+                                    className={`quick-item-card ${Number(product.stock_quantity) <= 0 ? 'disabled' : ''}`}
                                     key={product.id}
                                     onClick={() => addToCart(product)}
                                 >
                                     <h4>{product.name}</h4>
-                                    <p>{Number(product.price).toLocaleString()} FCFA</p>
-                                    <span className={product.stock <= 0 ? 'text-danger' : ''}>
-                                        Stock: {product.stock}
+                                    <p>{Number(product.selling_price).toLocaleString()} FCFA</p>
+                                    <span className={Number(product.stock_quantity) <= 0 ? 'text-danger' : ''}>
+                                        Stock: {product.stock_quantity}
                                     </span>
                                 </div>
                             ))}
@@ -157,7 +156,7 @@ export default function POS() {
                         <div className="cart-item" key={item.id}>
                             <div className="item-info">
                                 <h4>{item.name}</h4>
-                                <p>{Number(item.price).toLocaleString()} FCFA</p>
+                                <p>{Number(item.selling_price).toLocaleString()} FCFA</p>
                             </div>
                             <div className="item-actions">
                                 <div className="qty-controls">

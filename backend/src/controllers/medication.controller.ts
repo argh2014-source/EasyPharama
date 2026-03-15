@@ -4,17 +4,28 @@ import pool from '../db';
 export const getMedications = async (req: Request, res: Response): Promise<void> => {
     try {
         const pharmacyId = (req as any).user?.pharmacy_id;
+        const { search } = req.query;
 
         if (!pharmacyId) {
             res.status(403).json({ error: 'Accès non autorisé' });
             return;
         }
 
-        const { rows } = await pool.query(
-            'SELECT * FROM medications WHERE pharmacy_id = $1 ORDER BY name ASC',
-            [pharmacyId]
-        );
+        let queryStr = 'SELECT * FROM medications WHERE pharmacy_id = $1';
+        const queryParams: any[] = [pharmacyId];
 
+        if (search) {
+            queryStr += ` AND (
+                name ILIKE $2 OR 
+                dci ILIKE $2 OR 
+                barcode ILIKE $2
+            )`;
+            queryParams.push(`%${search}%`);
+        }
+
+        queryStr += ' ORDER BY name ASC';
+
+        const { rows } = await pool.query(queryStr, queryParams);
         res.json(rows);
     } catch (error) {
         console.error('Erreur getMedications:', error);
