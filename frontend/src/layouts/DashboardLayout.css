@@ -17,14 +17,14 @@
 }
 
 .sidebar-header {
-    height: 90px;
+    height: 120px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    padding: 1.5rem 1rem;
     border-bottom: 1px solid hsl(var(--text-secondary) / 0.1);
     background-color: white;
-    /* Fond blanc pour bien faire ressortir le logo s'il a fond blanc */
 }
 
 .sidebar-logo {
@@ -36,9 +36,14 @@
 }
 
 .sidebar-logo img {
-    max-width: 95%;
-    max-height: 60px;
+    max-width: 100%;
+    max-height: 80px;
     object-fit: contain;
+    transition: var(--transition);
+}
+
+.sidebar-logo img:hover {
+    transform: scale(1.05);
 }
 
 .sidebar-nav {
@@ -102,13 +107,15 @@
 
 /* Header */
 .top-header {
-    height: 72px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2rem;
-    margin: 1rem 1.5rem 0;
+    padding: 0 2.5rem;
+    margin: 2rem 2rem 1.5rem; /* Increased bottom margin */
     border-radius: var(--radius-lg);
+    background-color: hsl(var(--bg-card));
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05); /* Softer shadow */
     z-index: 5;
 }
 
@@ -223,6 +230,6 @@
 /* Main Content */
 .main-content {
     flex: 1;
-    padding: 1.5rem;
+    padding: 2rem;
     overflow-y: auto;
 }
