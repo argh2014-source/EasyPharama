@@ -26,8 +26,9 @@ export const createMedication = async (req: Request, res: Response): Promise<voi
     try {
         const pharmacyId = (req as any).user?.pharmacy_id;
         const {
-            name, generic_name, form, dosage, barcode,
-            unit_price, packaging_unit, category, has_vat
+            name, dci, dosage_form, dosage, barcode,
+            selling_price, purchase_price, manufacturer, supplier_id, category,
+            stock_quantity, min_stock_threshold, location
         } = req.body;
 
         if (!pharmacyId) {
@@ -35,17 +36,22 @@ export const createMedication = async (req: Request, res: Response): Promise<voi
             return;
         }
 
-        if (!name || unit_price === undefined) {
-            res.status(400).json({ error: 'Le nom et le prix unitaire sont obligatoires' });
+        if (!name || selling_price === undefined) {
+            res.status(400).json({ error: 'Le nom et le prix de vente sont obligatoires' });
             return;
         }
 
         const newMedication = await pool.query(
             `INSERT INTO medications (
-        pharmacy_id, name, generic_name, form, dosage, barcode, 
-        unit_price, packaging_unit, category, has_vat
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-            [pharmacyId, name, generic_name, form, dosage, barcode, unit_price, packaging_unit, category, has_vat || false]
+        pharmacy_id, name, dci, dosage_form, dosage, barcode, 
+        selling_price, purchase_price, manufacturer, supplier_id, category,
+        stock_quantity, min_stock_threshold, location
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`,
+            [
+                pharmacyId, name, dci, dosage_form, dosage, barcode, 
+                selling_price, purchase_price, manufacturer, supplier_id, category,
+                stock_quantity || 0, min_stock_threshold || 10, location
+            ]
         );
 
         res.status(201).json(newMedication.rows[0]);
@@ -60,8 +66,9 @@ export const updateMedication = async (req: Request, res: Response): Promise<voi
         const pharmacyId = (req as any).user?.pharmacy_id;
         const { id } = req.params;
         const {
-            name, generic_name, form, dosage, barcode,
-            unit_price, packaging_unit, category, has_vat
+            name, dci, dosage_form, dosage, barcode,
+            selling_price, purchase_price, manufacturer, supplier_id, category,
+            stock_quantity, min_stock_threshold, location
         } = req.body;
 
         if (!pharmacyId) {
@@ -80,21 +87,26 @@ export const updateMedication = async (req: Request, res: Response): Promise<voi
       UPDATE medications 
       SET 
         name = COALESCE($1, name),
-        generic_name = COALESCE($2, generic_name),
-        form = COALESCE($3, form),
+        dci = COALESCE($2, dci),
+        dosage_form = COALESCE($3, dosage_form),
         dosage = COALESCE($4, dosage),
         barcode = COALESCE($5, barcode),
-        unit_price = COALESCE($6, unit_price),
-        packaging_unit = COALESCE($7, packaging_unit),
-        category = COALESCE($8, category),
-        has_vat = COALESCE($9, has_vat),
+        selling_price = COALESCE($6, selling_price),
+        purchase_price = COALESCE($7, purchase_price),
+        manufacturer = COALESCE($8, manufacturer),
+        supplier_id = COALESCE($9, supplier_id),
+        category = COALESCE($10, category),
+        stock_quantity = COALESCE($11, stock_quantity),
+        min_stock_threshold = COALESCE($12, min_stock_threshold),
+        location = COALESCE($13, location),
         updated_at = NOW()
-      WHERE id = $10 AND pharmacy_id = $11
+      WHERE id = $14 AND pharmacy_id = $15
       RETURNING *
     `;
 
         const updatedMedication = await pool.query(updateQuery, [
-            name, generic_name, form, dosage, barcode, unit_price, packaging_unit, category, has_vat, id, pharmacyId
+            name, dci, dosage_form, dosage, barcode, selling_price, purchase_price, 
+            manufacturer, supplier_id, category, stock_quantity, min_stock_threshold, location, id, pharmacyId
         ]);
 
         res.json(updatedMedication.rows[0]);

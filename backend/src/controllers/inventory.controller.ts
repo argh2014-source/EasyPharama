@@ -14,7 +14,7 @@ export const getInventoryHistory = async (req: Request, res: Response): Promise<
        FROM inventory_batches ib
        JOIN medications m ON ib.medication_id = m.id
        WHERE m.pharmacy_id = $1
-       ORDER BY ib.created_at DESC`,
+       ORDER BY ib.received_date DESC`,
             [pharmacyId]
         );
 
@@ -29,7 +29,7 @@ export const addStock = async (req: Request, res: Response): Promise<void> => {
     const client = await pool.connect();
     try {
         const pharmacyId = (req as any).user?.pharmacy_id;
-        const { medication_id, batch_number, quantity, expiry_date, supplier_id, buy_price } = req.body;
+        const { medication_id, batch_number, quantity, expiration_date } = req.body;
 
         if (!pharmacyId) {
             res.status(403).json({ error: 'Accès non autorisé' });
@@ -46,9 +46,15 @@ export const addStock = async (req: Request, res: Response): Promise<void> => {
 
         const newBatch = await client.query(
             `INSERT INTO inventory_batches (
-        medication_id, batch_number, quantity, current_stock, expiry_date, supplier_id, buy_price
-      ) VALUES ($1, $2, $3, $3, $4, $5, $6) RETURNING *`,
-            [medication_id, batch_number, quantity, expiry_date, supplier_id, buy_price]
+        medication_id, batch_number, quantity, expiration_date
+      ) VALUES ($1, $2, $3, $4) RETURNING *`,
+            [medication_id, batch_number, quantity, expiration_date]
+        );
+
+        // Update main medication stock count
+        await client.query(
+            'UPDATE medications SET stock_quantity = stock_quantity + $1 WHERE id = $2',
+            [quantity, medication_id]
         );
 
         await client.query('COMMIT');

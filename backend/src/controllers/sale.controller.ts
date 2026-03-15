@@ -6,7 +6,7 @@ export const createSale = async (req: Request, res: Response): Promise<void> => 
     try {
         const pharmacyId = (req as any).user?.pharmacy_id;
         const userId = (req as any).user?.id;
-        const { patient_id, items, total_amount, payment_method, tax_amount, insurance_id, assurance_covered_amount } = req.body;
+        const { patient_id, items, total_amount, payment_method, discount } = req.body;
 
         if (!pharmacyId || !userId) {
             res.status(403).json({ error: 'Accès non autorisé' });
@@ -18,10 +18,9 @@ export const createSale = async (req: Request, res: Response): Promise<void> => 
         // 1. Create Sale record
         const saleResult = await client.query(
             `INSERT INTO sales (
-        pharmacy_id, user_id, patient_id, total_amount, payment_method, 
-        tax_amount, insurance_id, assurance_covered_amount
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-            [pharmacyId, userId, patient_id, total_amount, payment_method, tax_amount || 0, insurance_id, assurance_covered_amount || 0]
+        pharmacy_id, user_id, patient_id, total_amount, payment_method, discount
+      ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+            [pharmacyId, userId, patient_id, total_amount, payment_method, discount || 0]
         );
 
         const saleId = saleResult.rows[0].id;
@@ -29,22 +28,21 @@ export const createSale = async (req: Request, res: Response): Promise<void> => 
         // 2. Process items and update stock
         for (const item of items) {
             const { medication_id, quantity, unit_price } = item;
+            const subtotal = quantity * unit_price;
 
             // Add sale item
             await client.query(
-                `INSERT INTO sale_items (sale_id, medication_id, quantity, unit_price) 
-         VALUES ($1, $2, $3, $4)`,
-                [saleId, medication_id, quantity, unit_price]
+                `INSERT INTO sale_items (sale_id, medication_id, quantity, unit_price, subtotal) 
+         VALUES ($1, $2, $3, $4, $5)`,
+                [saleId, medication_id, quantity, unit_price, subtotal]
             );
 
-            // Decrement stock (simplified: taking from oldest batch with stock)
-            // In a real scenario, you'd specify batches or use FIFO/FEFO
+            // Decrement stock in medications table
             await client.query(
-                `UPDATE inventory_batches 
-         SET current_stock = current_stock - $1 
-         WHERE medication_id = $2 AND current_stock >= $1
-         AND id = (SELECT id FROM inventory_batches WHERE medication_id = $2 AND current_stock >= $1 ORDER BY expiry_date ASC LIMIT 1)`,
-                [quantity, medication_id]
+                `UPDATE medications 
+         SET stock_quantity = stock_quantity - $1 
+         WHERE id = $2 AND pharmacy_id = $3`,
+                [quantity, medication_id, pharmacyId]
             );
         }
 
@@ -68,7 +66,9 @@ export const getSalesHistory = async (req: Request, res: Response): Promise<void
         }
 
         const { rows } = await pool.query(
-            `SELECT s.*, u.full_name as user_name, p.full_name as patient_name 
+            `SELECT s.*, 
+                    u.first_name || ' ' || u.last_name as user_name, 
+                    p.first_name || ' ' || p.last_name as patient_name 
        FROM sales s
        JOIN users u ON s.user_id = u.id
        LEFT JOIN patients p ON s.patient_id = p.id

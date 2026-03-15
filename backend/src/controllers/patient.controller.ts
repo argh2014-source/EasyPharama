@@ -10,7 +10,7 @@ export const getPatients = async (req: Request, res: Response): Promise<void> =>
         }
 
         const { rows } = await pool.query(
-            'SELECT * FROM patients WHERE pharmacy_id = $1 ORDER BY full_name ASC',
+            'SELECT * FROM patients WHERE pharmacy_id = $1 ORDER BY first_name ASC, last_name ASC',
             [pharmacyId]
         );
 
@@ -24,24 +24,23 @@ export const getPatients = async (req: Request, res: Response): Promise<void> =>
 export const createPatient = async (req: Request, res: Response): Promise<void> => {
     try {
         const pharmacyId = (req as any).user?.pharmacy_id;
-        const { full_name, phone, email, address, insurance_id, assurance_id_number, insurance_coverage_percent } = req.body;
+        const { first_name, last_name, phone, address, insurance_id } = req.body;
 
         if (!pharmacyId) {
             res.status(403).json({ error: 'Accès non autorisé' });
             return;
         }
 
-        if (!full_name) {
-            res.status(400).json({ error: 'Le nom est obligatoire' });
+        if (!first_name) {
+            res.status(400).json({ error: 'Le prénom est obligatoire' });
             return;
         }
 
         const newPatient = await pool.query(
             `INSERT INTO patients (
-        pharmacy_id, full_name, phone, email, address, 
-        insurance_id, assurance_id_number, insurance_coverage_percent
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-            [pharmacyId, full_name, phone, email, address, insurance_id, assurance_id_number, insurance_coverage_percent]
+        pharmacy_id, first_name, last_name, phone, address, insurance_id
+      ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [pharmacyId, first_name, last_name, phone, address, insurance_id]
         );
 
         res.status(201).json(newPatient.rows[0]);
